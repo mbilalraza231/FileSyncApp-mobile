@@ -1,0 +1,7 @@
+{
+  "name": "FileSyncApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}

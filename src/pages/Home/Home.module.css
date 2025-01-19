@@ -1,0 +1,49 @@
+.homeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: #ffffff; /* White background for the home container */
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto; /* Center the card */
+}
+
+.appName {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center; /* Center the app name */
+}
+
+.description {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 30px;
+  text-align: center; /* Center the text */
+}
+
+.navigationLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between links */
+}
+
+.link {
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  color: white;
+  background-color: #4caf50; /* Button color */
+  border-radius: 5px;
+  text-decoration: none; /* Remove underline */
+  text-align: center;
+  transition: background-color 0.3s;
+  display: flex; /* Align icon and text */
+  align-items: center; /* Center icon vertically */
+}
+
+.link:hover {
+  background-color: #45a049; /* Darker shade on hover */
+}
