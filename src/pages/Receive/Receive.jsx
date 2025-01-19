@@ -1,5 +1,5 @@
 // pages/Receive/Receive.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { initializeConnection, handleOffer } from '../../services/wifiService'; // Import the Wi-Fi service
 import Button from '../../components/Button';
 import { FaDownload } from 'react-icons/fa'; // Import an icon from react-icons
@@ -10,7 +10,7 @@ const Receive = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   // Initialize WebRTC connection when the component mounts
-  React.useEffect(() => {
+  useEffect(() => {
     initializeConnection((fileData) => {
       // Handle the received file data (e.g., save it or display it)
       console.log('File received:', fileData);
