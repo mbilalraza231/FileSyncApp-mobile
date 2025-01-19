@@ -1,49 +1,68 @@
 // pages/Send/Send.jsx
 import React, { useState } from 'react';
-import FileSearch from '../../components/FileSearch';
+import { Filesystem } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
+import { Directory } from '@capacitor/filesystem';
+import { FaPaperPlane } from 'react-icons/fa';
 import Button from '../../components/Button';
-import { initializeConnection, sendFilesOverWiFi, createOffer, handleOffer } from '../../services/wifiService'; // Import the Wi-Fi service
-import { FaPaperPlane } from 'react-icons/fa'; // Import an icon for sending files
-import './Send.module.css'; // Import the CSS file for styling
+import './Send.module.css';
 
 const Send = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Initialize WebRTC connection when the component mounts
-  React.useEffect(() => {
-    initializeConnection((fileData) => {
-      // Handle the received file data (e.g., save it or display it)
-      console.log('File received:', fileData);
-    });
-  }, []);
+  const handleFileSelect = async () => {
+    try {
+      // First ensure we have permissions
+      await Filesystem.requestPermissions();
+      
+      // Then try to pick files
+      const result = await Filesystem.pickFiles({
+        multiple: true,
+        readData: true,
+        directory: Directory.Documents
+      });
 
-  const handleFileSelect = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedFiles(files);
-    setErrorMessage(''); // Clear any previous error messages
-  };
-
-  const handleSendFiles = async () => {
-    if (selectedFiles.length > 0) {
-      try {
-        await sendFilesOverWiFi(selectedFiles);
-      } catch (error) {
-        setErrorMessage('Error sending files. Please try again.');
+      if (result && result.files && result.files.length > 0) {
+        console.log('Files selected:', result.files);
+        setSelectedFiles(result.files);
+        setErrorMessage('');
+      } else {
+        console.log('No files selected');
+        setErrorMessage('No files selected. Please try again.');
       }
-    } else {
-      setErrorMessage('Please select files to send.');
+    } catch (error) {
+      console.error('Error in file selection:', error);
+      
+      if (error.message.includes('permission')) {
+        setErrorMessage('Please grant storage permission to access files');
+      } else {
+        setErrorMessage('Error selecting files. Please try again.');
+      }
     }
   };
 
-  const handleCreateOffer = async () => {
-    await createOffer();
-    // Implement your signaling to send the offer to the remote peer
-  };
-
-  const handleReceiveOffer = async (offer) => {
-    await handleOffer(offer);
-    // Implement your signaling to send the answer back to the remote peer
+  const handleSendFiles = async () => {
+    if (selectedFiles.length === 0) {
+      await handleFileSelect();
+    } else {
+      try {
+        // Example: Read the first file
+        if (selectedFiles[0].path) {
+          const fileContents = await Filesystem.readFile({
+            path: selectedFiles[0].path,
+            directory: Directory.Documents
+          });
+          console.log('File contents:', fileContents);
+        }
+        
+        // Your file sending logic here
+        console.log('Ready to send files:', selectedFiles);
+      } catch (error) {
+        console.error('Send error:', error);
+        setErrorMessage('Error preparing files for sending. Please try again.');
+      }
+    }
   };
 
   return (
@@ -52,15 +71,39 @@ const Send = () => {
       <div className="icon-container">
         <FaPaperPlane size={50} />
       </div>
-      <FileSearch onFileSelect={handleFileSelect} />
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
-      <Button onClick={handleSendFiles} className="send-button">
-        Send Files
+      
+      <Button 
+        onClick={handleSendFiles} 
+        className="send-button"
+      >
+        {selectedFiles.length === 0 ? 'Select Files' : 'Send Files'}
       </Button>
-      <Button onClick={handleCreateOffer}>
-        Create Offer
-      </Button>
-      {/* Add a way to receive offers, e.g., through an input or alert */}
+
+      {selectedFiles.length > 0 && (
+        <div className="selected-files">
+          <h3>Selected Files:</h3>
+          <ul>
+            {selectedFiles.map((file, index) => (
+              <li key={index}>{file.name}</li>
+            ))}
+          </ul>
+          <Button 
+            onClick={() => {
+              setSelectedFiles([]);
+              setErrorMessage('');
+            }}
+            className="clear-button"
+          >
+            Clear Selection
+          </Button>
+        </div>
+      )}
+      
+      {errorMessage && (
+        <div className="error-message">
+          {errorMessage}
+        </div>
+      )}
     </div>
   );
 };

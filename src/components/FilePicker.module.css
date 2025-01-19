@@ -1,0 +1,32 @@
+.filePicker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fileInput {
+  margin-bottom: 10px;
+}
+
+.searchInput {
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.fileList {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+
+.fileItem {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  width: 100%;
+  text-align: left;
+} 
