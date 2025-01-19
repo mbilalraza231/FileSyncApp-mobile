@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useFilePicker from '../hooks/useFilePicker'; // Import the custom hook
 import styles from './CustomFilePicker.module.css'; // Create a CSS file for styling
+import PropTypes from 'prop-types';
 
 const CustomFilePicker = ({ onFileSelect }) => {
   const { files, errorMessage, handleFileSelect } = useFilePicker();
@@ -30,6 +31,10 @@ const CustomFilePicker = ({ onFileSelect }) => {
       {errorMessage && <div className="error-message">{errorMessage}</div>}
     </div>
   );
+};
+
+CustomFilePicker.propTypes = {
+  onFileSelect: PropTypes.func.isRequired,
 };
 
 export default CustomFilePicker;

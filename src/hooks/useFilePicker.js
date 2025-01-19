@@ -1,35 +1,24 @@
 import { useState, useEffect } from 'react';
 import { Filesystem } from '@capacitor/filesystem';
 import { Directory } from '@capacitor/filesystem';
+import { handleError } from '../utils/errorHandler';
+import { requestFilePermissions, fetchFilesFromDirectory } from '../services/fileService';
 
 const useFilePicker = () => {
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const requestPermissions = async () => {
-    const result = await Filesystem.requestPermissions();
-    return result.publicStorage === 'granted';
-  };
-
   const fetchFiles = async () => {
-    try {
-      const result = await Filesystem.readdir({
-        path: 'your-directory-path', // Specify the directory path
-        directory: 'Documents',
-      });
-      setFiles(result.files);
-    } catch (error) {
-      console.error('Error fetching files:', error);
-      setErrorMessage('Error fetching files. Please try again.');
+    if (await requestFilePermissions()) {
+      const files = await fetchFilesFromDirectory('your-directory-path');
+      setFiles(files);
+    } else {
+      setErrorMessage('Permission denied. Please grant storage permission.');
     }
   };
 
   const handleFileSelect = async () => {
-    if (await requestPermissions()) {
-      await fetchFiles();
-    } else {
-      setErrorMessage('Permission denied. Please grant storage permission.');
-    }
+    await fetchFiles();
   };
 
   return { files, errorMessage, handleFileSelect };
